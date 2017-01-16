@@ -4,6 +4,7 @@ import {RecipeService} from "../recipe.service";
 import {Subscription} from "rxjs";
 import {Recipe} from "../recipe";
 import {FormArray, FormGroup, FormControl, Validators, FormBuilder} from "@angular/forms";
+import {isPresent} from "@angular/core/src/facade/lang";
 
 @Component({
   selector: 'app-recipe-edit',
@@ -52,17 +53,19 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     let recipeIngredients: FormArray = new FormArray([]);
 
     if(!this.isNew){
-      for(let i = 0; i < this.recipe.ingredients.length; i++){
-        recipeIngredients.push(
-          new FormGroup({
-          name: new FormControl(this.recipe.ingredients[i].name, Validators.required),
-          amount: new FormControl(this.recipe.ingredients[i].amount, [Validators.required, Validators.pattern("\\d+")])
-        }));
+      if (this.recipe.hasOwnProperty('ingredients')) {
+        for (let i = 0; i < this.recipe.ingredients.length; i++) {
+          recipeIngredients.push(
+            new FormGroup({
+              name: new FormControl(this.recipe.ingredients[i].name, Validators.required),
+              amount: new FormControl(this.recipe.ingredients[i].amount, [Validators.required, Validators.pattern("\\d+")])
+            }));
+        }
       }
+        recipeName = this.recipe.name;
+        recipeImageURL = this.recipe.imagePath;
+        recipeContent = this.recipe.description;
 
-      recipeName = this.recipe.name;
-      recipeImageURL = this.recipe.imagePath;
-      recipeContent = this.recipe.description;
     }
 
     this.recipeForm = this.formBuilder.group({
